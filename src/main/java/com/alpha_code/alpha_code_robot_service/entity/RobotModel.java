@@ -60,6 +60,6 @@ public class RobotModel {
     private List<Robot> robots;
 
     @OneToMany(mappedBy = "robotModel", fetch = FetchType.LAZY)
-    private List<RobotsCommand> robotsCommands;
+    private List<RobotCommand> robotsCommands;
 
 }

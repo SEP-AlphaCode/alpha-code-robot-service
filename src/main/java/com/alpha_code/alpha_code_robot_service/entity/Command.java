@@ -34,9 +34,9 @@ public class Command {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Size(max = 255)
     @NotNull
-    @Column(name = "description", nullable = false)
+    @Column(name = "description", nullable = false, columnDefinition = "TEXT")
+    @Lob
     private String description;
 
     @NotNull
@@ -55,6 +55,6 @@ public class Command {
     private List<CommandMapper> commandMappers;
 
     @OneToMany(mappedBy = "command", fetch =  FetchType.LAZY)
-    private List<RobotsCommand> robotsCommands;
+    private List<RobotCommand> robotsCommands;
 
 }

@@ -65,12 +65,16 @@ public class Esp32 {
     @Column(name = "topic_sub", nullable = false)
     private String topicSub;
 
+    @Column(name = "message", nullable = false)
+    @NotNull
+    private String message;
+
     @NotNull
     @Column(name = "created_at", nullable = false)
-    private Integer createdAt;
+    private LocalDateTime createdAt;
 
     @Column(name = "last_updated")
-    private Integer lastUpdated;
+    private LocalDateTime lastUpdated;
 
     @NotNull
     @Column(name = "status", nullable = false)

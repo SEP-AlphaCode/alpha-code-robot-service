@@ -14,8 +14,8 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "robots_command")
-public class RobotsCommand {
+@Table(name = "robot_command")
+public class RobotCommand {
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(
