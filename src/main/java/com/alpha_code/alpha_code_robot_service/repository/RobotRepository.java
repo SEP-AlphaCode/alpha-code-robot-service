@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -31,5 +32,7 @@ public interface RobotRepository extends JpaRepository<Robot, UUID> {
     );
 
     Optional<Robot> findRobotBySerialNumberAndStatusNot(String serialNumber, Integer status);
+
+    List<Robot> getAllByAccountIdAndStatusNot(UUID accountId, Integer status);
 
 }

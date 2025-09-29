@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -34,6 +35,12 @@ public class RobotController {
     @Operation(summary = "Get robot by id")
     public RobotDto getOne(@PathVariable UUID id) {
         return service.getById(id);
+    }
+
+    @GetMapping("/account/{accountId}")
+    @Operation(summary = "Get all robots by account id")
+    public List<RobotDto> getAllByAccountId(@PathVariable UUID accountId) {
+        return service.getAllByAccountId(accountId);
     }
 
     @PostMapping

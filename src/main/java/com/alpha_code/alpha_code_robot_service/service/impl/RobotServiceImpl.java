@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -47,6 +48,17 @@ public class RobotServiceImpl implements RobotService {
     }
 
     @Override
+    @Cacheable(value = "robots_list", key = "#accountId")
+    public List<RobotDto> getAllByAccountId(UUID accountId) {
+        return repository.getAllByAccountIdAndStatusNot(accountId, 0)
+                .stream()
+                .map(RobotMapper::toDto)
+                .toList();
+    }
+
+
+
+    @Override
     @Transactional
     @CacheEvict(value = "robots_list", allEntries = true)
     public RobotDto create(RobotDto robotDto) {
@@ -67,6 +79,12 @@ public class RobotServiceImpl implements RobotService {
     @CacheEvict(value = "robots_list", allEntries = true)
     @CachePut(value = "robot", key = "#id")
     public RobotDto update(UUID id, RobotDto robotDto) {
+
+        var valid = repository.findRobotBySerialNumberAndStatusNot(robotDto.getSerialNumber(), 0);
+        if (valid.isPresent() && !valid.get().getId().equals(id)) {
+            throw new RuntimeException("Robot already exists");
+        }
+
         var exist = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Robot not found"));
 
@@ -85,6 +103,13 @@ public class RobotServiceImpl implements RobotService {
     @CacheEvict(value = "robots_list", allEntries = true)
     @CachePut(value = "robot", key = "#id")
     public RobotDto patch(UUID id, RobotDto robotDto) {
+
+        var valid = repository.findRobotBySerialNumberAndStatusNot(robotDto.getSerialNumber(), 0);
+        if (valid.isPresent() && !valid.get().getId().equals(id)) {
+            throw new RuntimeException("Robot already exists");
+        }
+
+
         var exist = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Robot not found"));
 
