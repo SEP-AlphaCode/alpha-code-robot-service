@@ -30,5 +30,5 @@ public interface RobotModelRepository extends JpaRepository<RobotModel, UUID> {
             Pageable pageable
     );
 
-    Optional<RobotModel> getRobotModelByNameIgnoreCase(String name);
+    Optional<RobotModel> getRobotModelByNameIgnoreCaseAndStatusNot(String name, Integer status);
 }

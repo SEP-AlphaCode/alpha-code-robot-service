@@ -50,7 +50,7 @@ public class RobotServiceImpl implements RobotService {
     @Transactional
     @CacheEvict(value = "robots_list", allEntries = true)
     public RobotDto create(RobotDto robotDto) {
-        var exist = repository.findRobotBySerialNumber(robotDto.getSerialNumber());
+        var exist = repository.findRobotBySerialNumberAndStatusNot(robotDto.getSerialNumber(), 0);
         if(exist.isPresent()){
             throw new RuntimeException("Robot already exists");
         }

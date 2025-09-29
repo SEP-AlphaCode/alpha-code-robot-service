@@ -32,6 +32,6 @@ public interface CommandRepository extends JpaRepository<Command, UUID> {
             Pageable pageable
     );
 
-    Optional<Command> getCommandByNameIgnoreCase(String name);
+    Optional<Command> getCommandByNameIgnoreCaseAndStatusNot(String name, Integer status);
 
 }

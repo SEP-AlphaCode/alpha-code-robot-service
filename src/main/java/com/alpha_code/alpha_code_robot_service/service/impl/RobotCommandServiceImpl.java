@@ -56,8 +56,8 @@ public class RobotCommandServiceImpl implements RobotCommandService {
         Pageable pageable = PageRequest.of(page - 1, size);
         Page<RobotCommand> pagedResult;
         
-        var robotModel = robotModelRepository.getRobotModelByNameIgnoreCase(robotModelName);
-        var command = commandRepository.getCommandByNameIgnoreCase(commandName);
+        var robotModel = robotModelRepository.getRobotModelByNameIgnoreCaseAndStatusNot(robotModelName, 0);
+        var command = commandRepository.getCommandByNameIgnoreCaseAndStatusNot(commandName, 0);
         
         pagedResult = repository.getAll(robotModel.get().getId(), command.get().getId(), status, pageable);
 

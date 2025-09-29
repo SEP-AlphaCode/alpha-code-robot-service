@@ -60,7 +60,7 @@ public class CommandServiceImpl implements CommandService {
     @Override
     @Cacheable(value = "command", key = "#name")
     public CommandDto getByName(String name) {
-        var command = repository.getCommandByNameIgnoreCase(name)
+        var command = repository.getCommandByNameIgnoreCaseAndStatusNot(name, 0)
                 .orElseThrow(() -> new ResourceNotFoundException("Command not found"));
 
         return CommandMapper.toDto(command);
@@ -70,7 +70,7 @@ public class CommandServiceImpl implements CommandService {
     @Transactional
     @CacheEvict(value = "commands_list", allEntries = true)
     public CommandDto create(CommandDto commandDto) {
-        var exist = repository.getCommandByNameIgnoreCase(commandDto.getName());
+        var exist = repository.getCommandByNameIgnoreCaseAndStatusNot(commandDto.getName(), 0);
 
         if (exist.isPresent()) {
             throw new ResourceNotFoundException("Command name already exists");
@@ -91,7 +91,7 @@ public class CommandServiceImpl implements CommandService {
         var command = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Command not found"));
 
-        var exist = repository.getCommandByNameIgnoreCase(commandDto.getName());
+        var exist = repository.getCommandByNameIgnoreCaseAndStatusNot(commandDto.getName(), 0);
 
         if (exist.isPresent()) {
             throw new ResourceNotFoundException("Command name already exists");
@@ -114,7 +114,7 @@ public class CommandServiceImpl implements CommandService {
         var command = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Command not found"));
 
-        var exist = repository.getCommandByNameIgnoreCase(commandDto.getName());
+        var exist = repository.getCommandByNameIgnoreCaseAndStatusNot(commandDto.getName(), 0);
 
         if (exist.isPresent()) {
             throw new ResourceNotFoundException("Command name already exists");

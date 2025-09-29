@@ -29,7 +29,7 @@ public interface CommandMapperRepository extends JpaRepository<CommandMapper, UU
             Pageable pageable
     );
 
-    List<CommandMapper> getCommandMappersByCommandId(UUID commandId);
+    List<CommandMapper> getCommandMappersByCommandIdAndStatusNot(UUID commandId, Integer status);
 
 
 }

@@ -30,6 +30,6 @@ public interface RobotRepository extends JpaRepository<Robot, UUID> {
             Pageable pageable
     );
 
-    Optional<Robot> findRobotBySerialNumber(String serialNumber);
+    Optional<Robot> findRobotBySerialNumberAndStatusNot(String serialNumber, Integer status);
 
 }

@@ -54,10 +54,10 @@ public class CommandMapperServiceImpl implements CommandMapperService {
     @Override
     @Cacheable(value = "command_mappers_by_command_name", key = "#commandName")
     public List<CommandMapperDto> getByCommandName(String commandName) {
-        var command = commandRepository.getCommandByNameIgnoreCase(commandName)
+        var command = commandRepository.getCommandByNameIgnoreCaseAndStatusNot(commandName, 0)
                 .orElseThrow(() -> new ResourceNotFoundException("Command not found"));
 
-        var commandMappers = repository.getCommandMappersByCommandId(command.getId());
+        var commandMappers = repository.getCommandMappersByCommandIdAndStatusNot(command.getId(), 0);
 
         if (commandMappers.isEmpty()) {
             throw new ResourceNotFoundException("CommandMapper not found");
