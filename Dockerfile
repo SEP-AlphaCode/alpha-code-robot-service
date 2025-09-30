@@ -15,8 +15,8 @@ FROM eclipse-temurin:24-jdk AS runtime
 
 WORKDIR /app
 
-COPY --from=build /app/target/alpha-code-activity-service-0.0.1-SNAPSHOT.jar app.jar
+COPY --from=build /app/target/alpha-code-robot-service-0.0.1-SNAPSHOT.jar app.jar
 
-EXPOSE 8093
+EXPOSE 8094
 
 ENTRYPOINT ["java", "-jar", "app.jar"]
