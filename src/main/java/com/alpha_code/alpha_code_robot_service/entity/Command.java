@@ -36,7 +36,6 @@ public class Command {
 
     @NotNull
     @Column(name = "description", nullable = false, columnDefinition = "TEXT")
-    @Lob
     private String description;
 
     @NotNull
