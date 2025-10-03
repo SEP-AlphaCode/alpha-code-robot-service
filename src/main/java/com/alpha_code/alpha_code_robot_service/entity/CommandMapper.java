@@ -25,9 +25,17 @@ public class CommandMapper {
     @Column(name = "id", updatable = false, nullable = false, columnDefinition = "uuid")
     private UUID id;
 
-    @NotNull
-    @Column(name = "activity_id", nullable = false)
+    @Column(name = "activity_id")
     private UUID activityId;
+
+    @Column(name = "action_id")
+    private UUID actionId;
+
+    @Column(name = "expression_id")
+    private UUID expressionId;
+
+    @Column(name =  "dance_id")
+    private UUID danceId;
 
     @NotNull
     @Column(name = "created_date", nullable = false)
