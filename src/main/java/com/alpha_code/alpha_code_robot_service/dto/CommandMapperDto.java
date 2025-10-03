@@ -22,6 +22,12 @@ public class CommandMapperDto implements Serializable {
 
     private UUID activityId;
 
+    private UUID actionId;
+
+    private UUID expressionId;
+
+    private UUID danceId;
+
     @JsonProperty(access =  JsonProperty.Access.READ_ONLY)
     private LocalDateTime createdDate;
 

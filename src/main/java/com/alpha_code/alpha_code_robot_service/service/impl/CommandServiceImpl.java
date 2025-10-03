@@ -52,7 +52,7 @@ public class CommandServiceImpl implements CommandService {
     @Cacheable(value = "command", key = "#id")
     public CommandDto getOne(UUID id) {
         var command = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Command not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy Command"));
 
         return  CommandMapper.toDto(command);
     }
@@ -61,7 +61,7 @@ public class CommandServiceImpl implements CommandService {
     @Cacheable(value = "command", key = "#name")
     public CommandDto getByName(String name) {
         var command = repository.getCommandByNameIgnoreCaseAndStatusNot(name, 0)
-                .orElseThrow(() -> new ResourceNotFoundException("Command not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy Command"));
 
         return CommandMapper.toDto(command);
     }
@@ -73,7 +73,7 @@ public class CommandServiceImpl implements CommandService {
         var exist = repository.getCommandByNameIgnoreCaseAndStatusNot(commandDto.getName(), 0);
 
         if (exist.isPresent()) {
-            throw new ResourceNotFoundException("Command name already exists");
+            throw new ResourceNotFoundException("Tên Command đã tồn tại");
         }
 
         var command = repository.save(CommandMapper.toEntity(commandDto));
@@ -89,12 +89,12 @@ public class CommandServiceImpl implements CommandService {
     @CachePut(value = "command", key = "#id")
     public CommandDto update(UUID id, CommandDto commandDto) {
         var command = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Command not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy Command"));
 
         var exist = repository.getCommandByNameIgnoreCaseAndStatusNot(commandDto.getName(), 0);
 
         if (exist.isPresent()) {
-            throw new ResourceNotFoundException("Command name already exists");
+            throw new ResourceNotFoundException("Tên Command đã tồn tại");
         }
 
         command.setName(commandDto.getName());
@@ -112,12 +112,12 @@ public class CommandServiceImpl implements CommandService {
     @CachePut(value = "command", key = "#id")
     public CommandDto patch(UUID id, CommandDto commandDto) {
         var command = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Command not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy Command"));
 
         var exist = repository.getCommandByNameIgnoreCaseAndStatusNot(commandDto.getName(), 0);
 
         if (exist.isPresent()) {
-            throw new ResourceNotFoundException("Command name already exists");
+            throw new ResourceNotFoundException("Tên Command đã tồn tại");
         }
 
         if (commandDto.getName() != null) {
@@ -140,13 +140,13 @@ public class CommandServiceImpl implements CommandService {
     @CacheEvict(value = {"commands_list", "command"}, allEntries = true)
     public String delete(UUID id) {
         var command = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Command not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy Command"));
 
         command.setStatus(0);
         command.setLastUpdated(LocalDateTime.now());
 
         repository.save(command);
-        return "Command deleted successfully";
+        return "Command đã được xóa";
     }
 
     @Override
@@ -155,7 +155,7 @@ public class CommandServiceImpl implements CommandService {
     @CachePut(value = "command", key = "#id")
     public CommandDto changeStatus(UUID id, Integer status) {
         var command = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Command not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy Command"));
 
         command.setStatus(status);
         command.setLastUpdated(LocalDateTime.now());
