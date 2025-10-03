@@ -19,7 +19,7 @@ public interface RobotModelRepository extends JpaRepository<RobotModel, UUID> {
         WHERE (:name IS NULL OR :name = '' OR LOWER(rm.name) LIKE LOWER(CONCAT('%', :name, '%')))
           AND (:firmwareVersion IS NULL OR :firmwareVersion = '' OR LOWER(rm.firmwareVersion) LIKE LOWER(CONCAT('%', :firmwareVersion, '%')))
           AND (:ctrlVersion IS NULL OR :ctrlVersion = '' OR LOWER(rm.ctrlVersion) LIKE LOWER(CONCAT('%', :ctrlVersion, '%')))
-          AND (:status IS NULL OR rm.status = :status)
+          AND (COALESCE(:status, rm.status) = rm.status)
           AND rm.status <> 0
     """)
     Page<RobotModel> searchRobotModels(
