@@ -17,7 +17,7 @@ public interface RobotCommandRepository extends JpaRepository<RobotCommand, UUID
             WHERE (:robotModelId IS NULL OR e.robotModel.id = :robotModelId)
             AND (:commandId IS NULL OR e.command.id = :commandId)
             AND (:status IS NULL OR e.status = :status)
-            AND (:status <> 0)
+            AND (e.status <> 0)
             """)
     Page<RobotCommand> getAll(UUID robotModelId, UUID commandId, Integer status, Pageable pageable);
 }
