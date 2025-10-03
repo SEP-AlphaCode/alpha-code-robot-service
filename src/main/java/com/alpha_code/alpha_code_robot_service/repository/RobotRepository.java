@@ -20,7 +20,7 @@ public interface RobotRepository extends JpaRepository<Robot, UUID> {
         WHERE (:serialNumber IS NULL OR :serialNumber = '' OR LOWER(r.serialNumber) LIKE LOWER(CONCAT('%', :serialNumber, '%')))
           AND (:accountId IS NULL OR r.accountId = :accountId)
           AND (:status IS NULL OR r.status = :status)
-          AND (:status <> 0)
+          AND (r.status <> 0)
           AND (:robotModelId IS NULL OR r.robotModelId = :robotModelId)
     """)
     Page<Robot> searchRobots(

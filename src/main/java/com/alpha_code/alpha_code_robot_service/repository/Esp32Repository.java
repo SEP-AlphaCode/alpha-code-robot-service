@@ -22,7 +22,7 @@ public interface Esp32Repository extends JpaRepository<Esp32, UUID> {
           AND (:topicPub IS NULL OR :topicPub = '' OR LOWER(e.topicPub) LIKE LOWER(CONCAT('%', :topicPub, '%')))
           AND (:topicSub IS NULL OR :topicSub = '' OR LOWER(e.topicSub) LIKE LOWER(CONCAT('%', :topicSub, '%')))
           AND (:status IS NULL OR e.status = :status)
-          AND (:status <> 0)
+          AND (e.status <> 0)
     """)
     Page<Esp32> searchAll(
             @Param("accountId") UUID accountId,

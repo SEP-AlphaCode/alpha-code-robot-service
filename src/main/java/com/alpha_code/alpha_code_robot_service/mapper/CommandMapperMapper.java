@@ -12,6 +12,9 @@ public class CommandMapperMapper {
         CommandMapperDto commandMapperDto = new CommandMapperDto();
         commandMapperDto.setId(commandMapper.getId());
         commandMapperDto.setActivityId(commandMapper.getActivityId());
+        commandMapperDto.setActionId(commandMapper.getActionId());
+        commandMapperDto.setExpressionId(commandMapper.getExpressionId());
+        commandMapperDto.setDanceId(commandMapper.getDanceId());
         commandMapperDto.setCreatedDate(commandMapper.getCreatedDate());
         commandMapperDto.setLastUpdated(commandMapper.getLastUpdated());
         commandMapperDto.setStatus(commandMapper.getStatus());
@@ -31,6 +34,9 @@ public class CommandMapperMapper {
         CommandMapper commandMapper = new CommandMapper();
         commandMapper.setId(commandMapperDto.getId());
         commandMapper.setActivityId(commandMapperDto.getActivityId());
+        commandMapper.setActionId(commandMapperDto.getActionId());
+        commandMapper.setExpressionId(commandMapperDto.getExpressionId());
+        commandMapper.setDanceId(commandMapperDto.getDanceId());
         commandMapper.setCreatedDate(commandMapperDto.getCreatedDate());
         commandMapper.setLastUpdated(commandMapperDto.getLastUpdated());
         commandMapper.setStatus(commandMapperDto.getStatus());

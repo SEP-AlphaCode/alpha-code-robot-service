@@ -24,7 +24,7 @@ public interface CommandRepository extends JpaRepository<Command, UUID> {
             FROM Command e
             WHERE (:name IS NULL OR :name = '' OR LOWER(e.name) LIKE LOWER(CONCAT('%', :name, '%')))
             AND (:status IS NULL OR e.status = :status)
-            AND (:status <> 0)
+            AND (e.status <> 0)
             """)
     Page<Command> searchAll(
             @Param("name") String name,

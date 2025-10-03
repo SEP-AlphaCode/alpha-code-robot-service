@@ -56,7 +56,7 @@ public class Esp32ServiceImpl implements Esp32Service {
     @Cacheable(value = "esp32", key = "#id")
     public Esp32Dto getOne(UUID id) {
         var esp32 = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Esp32 not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy ESP32"));
         return Esp32Mapper.toDto(esp32);
     }
 
@@ -76,7 +76,7 @@ public class Esp32ServiceImpl implements Esp32Service {
     @CachePut(value = "esp32", key = "#id")
     public Esp32Dto update(UUID id, Esp32Dto dto) {
         var esp32 = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Esp32 not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy ESP32"));
 
         esp32.setAccountId(dto.getAccountId());
         esp32.setMacAddress(dto.getMacAddress());
@@ -100,7 +100,7 @@ public class Esp32ServiceImpl implements Esp32Service {
     @CachePut(value = "esp32", key = "#id")
     public Esp32Dto patch(UUID id, Esp32Dto dto) {
         var esp32 = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Esp32 not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy ESP32"));
 
         if (dto.getAccountId() != null) {
             esp32.setAccountId(dto.getAccountId());
@@ -144,7 +144,7 @@ public class Esp32ServiceImpl implements Esp32Service {
     @CacheEvict(value = {"esp32_list", "esp32"}, allEntries = true)
     public String delete(UUID id) {
         var esp32 = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Esp32 not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy ESP32"));
 
         esp32.setStatus(0);
         esp32.setLastUpdated(LocalDateTime.now());
@@ -159,7 +159,7 @@ public class Esp32ServiceImpl implements Esp32Service {
     @CachePut(value = "esp32", key = "#id")
     public Esp32Dto changeStatus(UUID id, Integer status) {
         var esp32 = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Esp32 not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy ESP32"));
 
         esp32.setStatus(status);
         esp32.setLastUpdated(LocalDateTime.now());
@@ -186,7 +186,7 @@ public class Esp32ServiceImpl implements Esp32Service {
     @Override
     public Esp32Dto sendMessage(UUID id, String message) throws MqttException {
         var esp32 = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Esp32 not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy ESP32"));
 
         mqttService.publish(esp32.getTopicPub(), message);
         return Esp32Mapper.toDto(esp32);
