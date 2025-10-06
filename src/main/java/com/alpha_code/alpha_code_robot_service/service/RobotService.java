@@ -21,5 +21,5 @@ public interface RobotService {
 
     String delete(UUID id);
 
-//    RobotDto changeStatus(UUID id, Integer status);
+    RobotDto changeStatus(UUID id, Integer status);
 }
