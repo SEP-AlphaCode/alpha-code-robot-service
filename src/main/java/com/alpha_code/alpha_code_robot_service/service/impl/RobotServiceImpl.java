@@ -140,25 +140,22 @@ public class RobotServiceImpl implements RobotService {
         var exist = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Robot not found"));
 
-        exist.setStatus(0);
-        exist.setLastUpdated(LocalDateTime.now());
-
-        repository.save(exist);
+        repository.delete(exist);
         return "Robot deleted successfully";
     }
 
-    @Override
-    @Transactional
-    @CacheEvict(value = "robots_list", allEntries = true)
-    @CachePut(value = "robot", key = "#id")
-    public RobotDto changeStatus(UUID id, Integer status) {
-        var exist = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Robot not found"));
-
-        exist.setStatus(status);
-        exist.setLastUpdated(LocalDateTime.now());
-
-        Robot savedRobot = repository.save(exist);
-        return RobotMapper.toDto(savedRobot);
-    }
+//    @Override
+//    @Transactional
+//    @CacheEvict(value = "robots_list", allEntries = true)
+//    @CachePut(value = "robot", key = "#id")
+//    public RobotDto changeStatus(UUID id, Integer status) {
+//        var exist = repository.findById(id)
+//                .orElseThrow(() -> new ResourceNotFoundException("Robot not found"));
+//
+//        exist.setStatus(status);
+//        exist.setLastUpdated(LocalDateTime.now());
+//
+//        Robot savedRobot = repository.save(exist);
+//        return RobotMapper.toDto(savedRobot);
+//    }
 }

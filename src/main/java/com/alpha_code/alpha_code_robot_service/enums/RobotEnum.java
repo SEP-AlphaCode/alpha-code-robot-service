@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum RobotEnum {
-    DELETED(0, "ĐÃ BỊ XÓA"),
     ACTIVE(1, "HOẠT ĐỘNG");
 
     private final int code;
