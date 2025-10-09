@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -35,6 +36,13 @@ public class RobotModelServiceImpl implements RobotModelService {
         pagedResult = repository.searchRobotModels(name,firmwareVersion,ctrlVersion,status,pageable);
 
         return new PagedResult<>(pagedResult.map(RobotModelMapper::toDto));
+    }
+
+    public List<RobotModel> findAllByIds(List<UUID> uuidList) {
+        if (uuidList == null || uuidList.isEmpty()) {
+            return List.of();
+        }
+        return repository.findAllByIdIn(uuidList);
     }
 
     @Override

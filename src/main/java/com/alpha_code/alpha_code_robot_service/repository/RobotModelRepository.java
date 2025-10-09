@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -31,4 +32,6 @@ public interface RobotModelRepository extends JpaRepository<RobotModel, UUID> {
     );
 
     Optional<RobotModel> getRobotModelByNameIgnoreCaseAndStatusNot(String name, Integer status);
+
+    List<RobotModel> findAllByIdIn(List<UUID> ids);
 }

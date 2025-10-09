@@ -2,7 +2,9 @@ package com.alpha_code.alpha_code_robot_service.service;
 
 import com.alpha_code.alpha_code_robot_service.dto.PagedResult;
 import com.alpha_code.alpha_code_robot_service.dto.RobotModelDto;
+import com.alpha_code.alpha_code_robot_service.entity.RobotModel;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface RobotModelService {
@@ -14,4 +16,5 @@ public interface RobotModelService {
     String delete(UUID id);
     RobotModelDto changeStatus(UUID id, Integer status);
 
+    List<RobotModel> findAllByIds(List<UUID> uuidList);
 }
