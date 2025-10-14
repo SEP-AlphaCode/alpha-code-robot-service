@@ -1,10 +1,13 @@
 package com.alpha_code.alpha_code_robot_service.entity;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import io.hypersistence.utils.hibernate.type.json.JsonType;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -44,6 +47,9 @@ public class RobotModel {
     @Column(name = "ctrl_version", nullable = false)
     private String ctrlVersion;
 
+    @Column(name = "robot_prompt", nullable = false, columnDefinition = "text")
+    private String robotPrompt;
+
     @NotNull
     @Column(name = "created_date", nullable = false)
     private LocalDateTime createdDate;
@@ -59,7 +65,5 @@ public class RobotModel {
     @OneToMany(mappedBy = "robotModel", fetch = FetchType.LAZY)
     private List<Robot> robots;
 
-    @OneToMany(mappedBy = "robotModel", fetch = FetchType.LAZY)
-    private List<RobotCommand> robotsCommands;
 
 }

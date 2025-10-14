@@ -74,6 +74,7 @@ public class RobotModelServiceImpl implements RobotModelService {
         robotModel.setName(robotModelDto.getName());
         robotModel.setFirmwareVersion(robotModelDto.getFirmwareVersion());
         robotModel.setCtrlVersion(robotModelDto.getCtrlVersion());
+        robotModel.setRobotPrompt(robotModelDto.getRobotPrompt());
         robotModel.setStatus(robotModelDto.getStatus());
         robotModel.setLastUpdated(LocalDateTime.now());
 
@@ -101,6 +102,9 @@ public class RobotModelServiceImpl implements RobotModelService {
             robotModel.setCtrlVersion(robotModelDto.getCtrlVersion());
         }
 
+        if (robotModelDto.getRobotPrompt() != null){
+            robotModel.setRobotPrompt(robotModelDto.getRobotPrompt());
+        }
         if (robotModelDto.getStatus() != null){
             robotModel.setStatus(robotModelDto.getStatus());
         }
