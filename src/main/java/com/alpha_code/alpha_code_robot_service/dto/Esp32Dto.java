@@ -1,18 +1,14 @@
 package com.alpha_code.alpha_code_robot_service.dto;
 
-import com.alpha_code.alpha_code_robot_service.enums.CommandMapperEnum;
 import com.alpha_code.alpha_code_robot_service.enums.Esp32Enum;
 import com.alpha_code.alpha_code_robot_service.validation.OnCreate;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
-import io.hypersistence.utils.hibernate.type.json.JsonType;
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Type;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;

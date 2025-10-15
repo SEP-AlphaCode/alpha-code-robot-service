@@ -5,6 +5,7 @@ import com.alpha_code.alpha_code_robot_service.enums.RobotEnum;
 import com.alpha_code.alpha_code_robot_service.enums.RobotModelEnum;
 import com.alpha_code.alpha_code_robot_service.validation.OnCreate;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -31,6 +32,9 @@ public class RobotModelDto implements Serializable {
 
     @NotNull(message = "Ctrl version is required", groups = {OnCreate.class})
     private String ctrlVersion;
+
+    @NotNull(message = "Robot prompt is required", groups = {OnCreate.class})
+    private String robotPrompt;
 
     @JsonProperty(access =  JsonProperty.Access.READ_ONLY)
     private LocalDateTime createdDate;

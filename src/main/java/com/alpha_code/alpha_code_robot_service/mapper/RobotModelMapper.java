@@ -12,6 +12,7 @@ public class RobotModelMapper {
         robotModelDto.setName(robotModel.getName());
         robotModelDto.setFirmwareVersion(robotModel.getFirmwareVersion());
         robotModelDto.setCtrlVersion(robotModel.getCtrlVersion());
+        robotModelDto.setRobotPrompt(robotModel.getRobotPrompt());
         robotModelDto.setCreatedDate(robotModel.getCreatedDate());
         robotModelDto.setLastUpdated(robotModel.getLastUpdated());
         robotModelDto.setStatus(robotModel.getStatus());
@@ -26,6 +27,7 @@ public class RobotModelMapper {
         robotModel.setName(dto.getName());
         robotModel.setFirmwareVersion(dto.getFirmwareVersion());
         robotModel.setCtrlVersion(dto.getCtrlVersion());
+        robotModel.setRobotPrompt(dto.getRobotPrompt());
         robotModel.setCreatedDate(dto.getCreatedDate());
         robotModel.setLastUpdated(dto.getLastUpdated());
         robotModel.setStatus(dto.getStatus());
