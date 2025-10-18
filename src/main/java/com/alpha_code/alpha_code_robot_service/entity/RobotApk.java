@@ -3,14 +3,13 @@ package com.alpha_code.alpha_code_robot_service.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 @Data
@@ -18,8 +17,8 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "robot_model")
-public class RobotModel {
+@Table(name = "robot_apk")
+public class RobotApk {
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(
@@ -31,18 +30,16 @@ public class RobotModel {
 
     @Size(max = 255)
     @NotNull
-    @Column(name = "name", nullable = false)
-    private String name;
+    @Column(name = "file", nullable = false)
+    private String file;
 
-    @Size(max = 255)
+    @Size(max = 50)
     @NotNull
-    @Column(name = "firmware_version", nullable = false)
-    private String firmwareVersion;
+    @Column(name = "version", nullable = false)
+    private String version;
 
-    @Size(max = 255)
-    @NotNull
-    @Column(name = "ctrl_version", nullable = false)
-    private String ctrlVersion;
+    @Column(name = "description", columnDefinition = "text")
+    private String description;
 
     @NotNull
     @Column(name = "created_date", nullable = false)
@@ -55,14 +52,10 @@ public class RobotModel {
     @Column(name = "status", nullable = false)
     private Integer status;
 
-    //Relationship
-    @OneToMany(mappedBy = "robotModel", fetch = FetchType.LAZY)
-    private List<Robot> robots;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "robot_model_id", insertable = false, updatable = false)
+    private RobotModel robotModel;
 
-    @OneToMany(mappedBy = "robotModel", fetch = FetchType.LAZY)
-    private List<RobotCommand> robotsCommands;
-
-    @OneToMany(mappedBy = "robotModel", fetch = FetchType.LAZY)
-    private List<RobotApk> robotApks;
-
+    @Column(name = "robot_model_id", nullable = false)
+    private UUID robotModelId;
 }
