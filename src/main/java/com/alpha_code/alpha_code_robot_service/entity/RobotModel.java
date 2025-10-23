@@ -66,4 +66,7 @@ public class RobotModel {
     private List<Robot> robots;
 
 
+    @OneToMany(mappedBy = "robotModel", fetch = FetchType.LAZY)
+    private List<RobotApk> robotApks;
+
 }
