@@ -31,7 +31,7 @@ public class RobotApkController {
     @GetMapping("/file-path")
     @PreAuthorize("hasAnyAuthority('ROLE_Parent', 'ROLE_Children')")
     @Operation(summary = "Get robot apk file path by apk id and account id")
-    public String getFilePathByApkId(@RequestParam("apkId")  UUID apkId, @RequestParam("accountId") UUID accountId) {
+    public String getFilePathByApkId(@RequestParam("apkId")  UUID apkId, @RequestParam(value = "accountId", required = false) UUID accountId) {
         return robotApkService.getFilePathByApkId(apkId, accountId);
     }
 

@@ -46,6 +46,9 @@ public class RobotApkServiceImpl implements RobotApkService {
         }
 
         if(apk.isRequireLicense()){
+            if(accountId == null){
+                throw new IllegalArgumentException("Tài khoản là bắt buộc để tải APK này");
+            }
             var licenseKey = licenseKeyServiceClient.getLicenseByAccountId(accountId);
             if(licenseKey == null || licenseKey.getStatus() != 1  ){
                 throw new ResourceNotFoundException("Tài khoản không có license hợp lệ để tải APK này");
