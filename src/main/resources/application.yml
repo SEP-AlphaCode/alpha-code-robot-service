@@ -54,6 +54,12 @@ grpc:
     address: 0.0.0.0
     security:
       enabled: false  # dùng TLS=true nếu cần
+  client:
+    alpha-payment-service:
+      address: static://${GRPC_PAYMENT_SERVICE_BASE_URL:localhost}:${GRPC_PAYMENT_SERVICE_PORT:50052}
+      enableKeepAlive: true
+      keepAliveWithoutCalls: true
+      negotiationType: plaintext
 
 
 
