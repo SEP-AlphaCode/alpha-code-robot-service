@@ -2,7 +2,6 @@ package com.alpha_code.alpha_code_robot_service.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,7 +9,6 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.time.LocalDateTime;
-import java.util.Set;
 import java.util.UUID;
 
 @Data
@@ -18,8 +16,8 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "robot_apk")
-public class RobotApk {
+@Table(name = "robot_apk_addon")
+public class RobotApkAddon {
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(
@@ -29,26 +27,11 @@ public class RobotApk {
     @Column(name = "id", updatable = false, nullable = false, columnDefinition = "uuid")
     private UUID id;
 
-    @Size(max = 255)
-    @NotNull
-    @Column(name = "file", nullable = false)
-    private String file;
+    @Column(name = "robot_apk_id", nullable = false, columnDefinition = "uuid")
+    private UUID robotApkId;
 
-    @Size(max = 50)
-    @NotNull
-    @Column(name = "version", nullable = false)
-    private String version;
-
-    @Column(name = "description", columnDefinition = "text")
-    private String description;
-
-
-    @Column(name = "robot_model_id", nullable = false)
-    private UUID robotModelId;
-
-    @NotNull
-    @Column(name = "is_require_license", nullable = false)
-    private boolean isRequireLicense;
+    @Column(name = "addon_id", nullable = false, columnDefinition = "uuid")
+    private UUID addonId;
 
     @NotNull
     @Column(name = "created_date", nullable = false)
@@ -62,9 +45,6 @@ public class RobotApk {
     private Integer status;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "robot_model_id", insertable = false, updatable = false)
-    private RobotModel robotModel;
-
-    @OneToMany(mappedBy = "robotApk", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Set<RobotApkAddon> robotApkAddons;
+    @JoinColumn(name = "robot_apk_id", referencedColumnName = "id", insertable = false, updatable = false)
+    private RobotApk robotApk;
 }
