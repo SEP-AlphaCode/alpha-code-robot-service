@@ -70,10 +70,10 @@ public class RobotApkServiceImpl implements RobotApkService {
             String fileKey = "robot-apks/" + System.currentTimeMillis() + "_" + file.getOriginalFilename();
             String fileUrl = s3Service.uploadBytes(file.getBytes(), fileKey, file.getContentType());
 
+
             RobotApk robotApk = RobotApkMapper.toEntity(dto);
             robotApk.setStatus(1);
             robotApk.setCreatedDate(LocalDateTime.now());
-            robotApk.setLastUpdated(LocalDateTime.now());
             robotApk.setFile(fileUrl); // đường dẫn file .zip trên S3
 
             RobotApk saved = robotApkRepository.save(robotApk);
