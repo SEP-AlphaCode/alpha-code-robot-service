@@ -45,7 +45,7 @@ public class RobotApkServiceImpl implements RobotApkService {
             throw new ResourceNotFoundException("File APK trống");
         }
 
-        if(apk.isRequireLicense()){
+        if(apk.getIsRequireLicense()){
             if(accountId == null){
                 throw new IllegalArgumentException("Tài khoản là bắt buộc để tải APK này");
             }
@@ -129,7 +129,7 @@ public class RobotApkServiceImpl implements RobotApkService {
 
         robotApk.setVersion(robotApkDto.getVersion());
         robotApk.setDescription(robotApkDto.getDescription());
-        robotApk.setRequireLicense(robotApkDto.getIsRequireLicense());
+        robotApk.setIsRequireLicense(robotApkDto.getIsRequireLicense());
         robotApk.setStatus(robotApkDto.getStatus());
         robotApk.setLastUpdated(LocalDateTime.now());
 
