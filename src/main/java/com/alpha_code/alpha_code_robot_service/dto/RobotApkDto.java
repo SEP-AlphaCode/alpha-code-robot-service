@@ -34,7 +34,7 @@ public class RobotApkDto implements Serializable {
     private UUID robotModelId;
 
     @NotNull(message = "Cần giấy phép sử dụng là bắt buộc", groups = {OnCreate.class})
-    private boolean isRequireLicense;
+    private Boolean isRequireLicense;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String robotModelName;

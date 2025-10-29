@@ -124,12 +124,12 @@ public class RobotApkServiceImpl implements RobotApkService {
     @Transactional
     @CacheEvict(value = {"robot_apks_list", "robot_apk_file_path"}, allEntries = true)
     public RobotApkDto update(UUID id, RobotApkDto robotApkDto) {
-        var robotApk = robotApkRepository.findById(id)
+        var robotApk = robotApkRepository.findRobotApkById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Robot APK không tìm thấy"));
 
         robotApk.setVersion(robotApkDto.getVersion());
         robotApk.setDescription(robotApkDto.getDescription());
-        robotApk.setRequireLicense(robotApkDto.isRequireLicense());
+        robotApk.setRequireLicense(robotApkDto.getIsRequireLicense());
         robotApk.setStatus(robotApkDto.getStatus());
         robotApk.setLastUpdated(LocalDateTime.now());
 
@@ -141,7 +141,7 @@ public class RobotApkServiceImpl implements RobotApkService {
     @Transactional
     @CacheEvict(value = {"robot_apks_list", "robot_apk_file_path"}, allEntries = true)
     public void delete(UUID id) {
-        var robotApk = robotApkRepository.findById(id)
+        var robotApk = robotApkRepository.findRobotApkById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Robot APK không tìm thấy"));
 
         robotApk.setStatus(0);

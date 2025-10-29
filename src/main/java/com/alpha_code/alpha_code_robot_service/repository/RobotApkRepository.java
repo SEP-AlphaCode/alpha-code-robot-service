@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Optional;
 import java.util.UUID;
 
 public interface RobotApkRepository extends JpaRepository<RobotApk, UUID> {
@@ -23,4 +24,5 @@ public interface RobotApkRepository extends JpaRepository<RobotApk, UUID> {
 """)
     Page<RobotApk> getAlls(@Param("search") String search, Pageable pageable);
 
+    Optional<RobotApk> findRobotApkById(UUID id);
 }

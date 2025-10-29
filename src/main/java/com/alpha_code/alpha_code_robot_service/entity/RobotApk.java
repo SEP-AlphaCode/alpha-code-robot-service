@@ -48,7 +48,7 @@ public class RobotApk {
 
     @NotNull
     @Column(name = "is_require_license", nullable = false)
-    private boolean isRequireLicense;
+    private Boolean isRequireLicense;
 
     @NotNull
     @Column(name = "created_date", nullable = false)

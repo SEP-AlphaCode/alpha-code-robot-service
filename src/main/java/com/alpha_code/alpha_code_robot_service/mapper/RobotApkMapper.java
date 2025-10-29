@@ -19,7 +19,7 @@ public class RobotApkMapper {
         if(robotApk.getRobotModel() != null){
             dto.setRobotModelName(robotApk.getRobotModel().getName());
         }
-        dto.setRequireLicense(robotApk.isRequireLicense());
+        dto.setIsRequireLicense(robotApk.getIsRequireLicense());
         return dto;
     }
 
@@ -35,7 +35,7 @@ public class RobotApkMapper {
         robotApk.setCreatedDate(dto.getCreatedDate());
         robotApk.setStatus(dto.getStatus());
         robotApk.setRobotModelId(dto.getRobotModelId());
-        robotApk.setRequireLicense(dto.isRequireLicense());
+        robotApk.setIsRequireLicense(dto.getIsRequireLicense());
 
         return robotApk;
     }
