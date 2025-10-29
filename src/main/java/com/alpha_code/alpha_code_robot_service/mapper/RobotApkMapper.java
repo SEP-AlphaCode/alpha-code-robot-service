@@ -16,7 +16,7 @@ public class RobotApkMapper {
         dto.setCreatedDate(robotApk.getCreatedDate());
         dto.setStatus(robotApk.getStatus());
         dto.setRobotModelId(robotApk.getRobotModelId());
-        if(robotApk.getRobotModelId()!=null){
+        if(robotApk.getRobotModel() != null){
             dto.setRobotModelName(robotApk.getRobotModel().getName());
         }
         dto.setRequireLicense(robotApk.isRequireLicense());
