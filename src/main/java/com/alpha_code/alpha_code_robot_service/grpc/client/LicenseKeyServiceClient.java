@@ -28,18 +28,24 @@ public class LicenseKeyServiceClient {
 
             GetLicenseResponse response = blockingStub.getLicenseByAccountId(request);
 
-            log.info("[gRPC] LicenseKeyService trả về: hasLicense={}, status={}, key={}",
-                    response.getHasLicense(), response.getStatus(), response.getKey());
+            if (!response.getHasLicense()) {
+                log.warn("[gRPC] Account {} chưa có license.", accountId);
+            } else {
+                log.info("[gRPC] LicenseKeyService trả về: hasLicense={}, status={}, key={}",
+                        true, response.getStatus(), response.getKey());
+            }
 
             return response;
 
         } catch (StatusRuntimeException e) {
-            // gRPC exception: service không chạy, timeout, v.v.
+            // gRPC lỗi kết nối hoặc service không chạy
             log.error("[gRPC] Lỗi khi gọi LicenseKeyService: {}", e.getStatus(), e);
             throw new RuntimeException("Không thể kết nối đến license-key-service", e);
+
         } catch (Exception e) {
             log.error("[gRPC] Lỗi không xác định: {}", e.getMessage(), e);
             throw e;
         }
     }
+
 }
