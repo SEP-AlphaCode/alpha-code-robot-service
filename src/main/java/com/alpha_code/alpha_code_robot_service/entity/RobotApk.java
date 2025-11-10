@@ -36,7 +36,7 @@ public class RobotApk {
 
     @Size(max = 100)
     @NotNull
-    @Column(name = "name")
+    @Column(name = "name", nullable = false)
     private String name;
 
     @Size(max = 50)
