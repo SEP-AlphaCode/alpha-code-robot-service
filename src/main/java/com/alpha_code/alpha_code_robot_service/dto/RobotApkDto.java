@@ -1,8 +1,6 @@
 package com.alpha_code.alpha_code_robot_service.dto;
 
-import com.alpha_code.alpha_code_robot_service.entity.RobotApk;
 import com.alpha_code.alpha_code_robot_service.enums.RobotApkEnum;
-import com.alpha_code.alpha_code_robot_service.enums.RobotEnum;
 import com.alpha_code.alpha_code_robot_service.validation.OnCreate;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
@@ -22,6 +20,9 @@ import java.util.UUID;
 public class RobotApkDto implements Serializable {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private UUID id;
+
+    @NotNull(message = "Tên là bắt buộc", groups = {OnCreate.class})
+    private String name;
 
     @NotNull(message = "Phiên bản là bắt buộc", groups = {OnCreate.class})
     @Pattern(regexp = "\\d+\\.\\d+(\\.\\d+)?", message = "Phiên bản phải có dạng x.y hoặc x.y.z")

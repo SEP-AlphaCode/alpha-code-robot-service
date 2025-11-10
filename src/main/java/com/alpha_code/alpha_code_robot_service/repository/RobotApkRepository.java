@@ -25,4 +25,14 @@ public interface RobotApkRepository extends JpaRepository<RobotApk, UUID> {
     Page<RobotApk> getAlls(@Param("search") String search, Pageable pageable);
 
     Optional<RobotApk> findRobotApkById(UUID id);
+
+    @Query("""
+        SELECT ra
+        FROM RobotApk ra
+        WHERE ra.name = :name
+          AND ra.version = :version
+          AND ra.status <> 0
+        ORDER BY ra.isRequireLicense ASC, ra.lastUpdated DESC
+    """)
+    Optional<RobotApk> findByNameAndVersion(@Param("name") String name, @Param("version") String version);
 }

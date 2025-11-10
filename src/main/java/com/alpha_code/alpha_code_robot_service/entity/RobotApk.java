@@ -34,6 +34,11 @@ public class RobotApk {
     @Column(name = "file", nullable = false)
     private String file;
 
+    @Size(max = 100)
+    @NotNull
+    @Column(name = "name")
+    private String name;
+
     @Size(max = 50)
     @NotNull
     @Column(name = "version", nullable = false)

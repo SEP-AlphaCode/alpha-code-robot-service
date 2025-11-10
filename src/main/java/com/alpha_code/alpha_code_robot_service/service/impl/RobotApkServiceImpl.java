@@ -70,6 +70,11 @@ public class RobotApkServiceImpl implements RobotApkService {
                 throw new IllegalArgumentException("File phải có định dạng .zip");
             }
 
+            var existingApk = robotApkRepository.findByNameAndVersion(dto.getName(), dto.getVersion());
+            if (existingApk.isPresent()) {
+                throw new IllegalArgumentException("Đã tồn tại APK với tên và phiên bản này");
+            }
+
             String fileKey = "robot-apks/" + System.currentTimeMillis() + "_" + file.getOriginalFilename();
             String fileUrl = s3Service.uploadBytes(file.getBytes(), fileKey, file.getContentType());
 
@@ -127,7 +132,19 @@ public class RobotApkServiceImpl implements RobotApkService {
         var robotApk = robotApkRepository.findRobotApkById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Robot APK không tìm thấy"));
 
-        robotApk.setVersion(robotApkDto.getVersion());
+        String newName = robotApkDto.getName() != null ? robotApkDto.getName() : robotApk.getName();
+        String newVersion = robotApkDto.getVersion() != null ? robotApkDto.getVersion() : robotApk.getVersion();
+
+        // Check nếu tồn tại APK khác có cùng name + version
+        var existingApk = robotApkRepository.findByNameAndVersion(newName, newVersion);
+        if (existingApk.isPresent() && !existingApk.get().getId().equals(id)) {
+            throw new IllegalArgumentException("Đã tồn tại APK với tên và phiên bản này");
+        }
+
+        // Cập nhật các trường
+        robotApk.setName(newName);
+        robotApk.setVersion(newVersion);
+
         robotApk.setDescription(robotApkDto.getDescription());
         robotApk.setIsRequireLicense(robotApkDto.getIsRequireLicense());
         robotApk.setStatus(robotApkDto.getStatus());

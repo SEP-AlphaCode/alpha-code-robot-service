@@ -16,6 +16,7 @@ public class RobotApkMapper {
         dto.setCreatedDate(robotApk.getCreatedDate());
         dto.setStatus(robotApk.getStatus());
         dto.setRobotModelId(robotApk.getRobotModelId());
+        dto.setName(robotApk.getName());
         if(robotApk.getRobotModel() != null){
             dto.setRobotModelName(robotApk.getRobotModel().getName());
         }
@@ -35,6 +36,7 @@ public class RobotApkMapper {
         robotApk.setCreatedDate(dto.getCreatedDate());
         robotApk.setStatus(dto.getStatus());
         robotApk.setRobotModelId(dto.getRobotModelId());
+        robotApk.setName(dto.getName());
         robotApk.setIsRequireLicense(dto.getIsRequireLicense());
 
         return robotApk;
