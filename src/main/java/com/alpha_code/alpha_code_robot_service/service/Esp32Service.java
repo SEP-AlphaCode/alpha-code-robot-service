@@ -2,9 +2,12 @@ package com.alpha_code.alpha_code_robot_service.service;
 
 import com.alpha_code.alpha_code_robot_service.dto.Esp32Dto;
 import com.alpha_code.alpha_code_robot_service.dto.PagedResult;
+import com.alpha_code.alpha_code_robot_service.entity.Esp32;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface Esp32Service {
@@ -32,5 +35,15 @@ public interface Esp32Service {
 
     Esp32Dto changeStatus(UUID id, Integer status);
 
-    Esp32Dto sendMessage(UUID id, String message) throws MqttException;
+    Esp32Dto sendMessage(UUID id, String name, String message) throws MqttException;
+
+    List<JsonNode> getDevices(UUID id);
+
+    boolean deviceExists(UUID id, String name);
+
+    Esp32Dto addDevice(UUID id, String name, String type);
+
+    Esp32Dto removeDevice(UUID id, String name);
+
+    Esp32Dto updateDevice(UUID id, String name, String newType);
 }
