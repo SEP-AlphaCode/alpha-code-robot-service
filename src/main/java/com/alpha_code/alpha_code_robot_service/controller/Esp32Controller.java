@@ -3,12 +3,14 @@ package com.alpha_code.alpha_code_robot_service.controller;
 import com.alpha_code.alpha_code_robot_service.dto.Esp32Dto;
 import com.alpha_code.alpha_code_robot_service.dto.PagedResult;
 import com.alpha_code.alpha_code_robot_service.service.Esp32Service;
+import com.fasterxml.jackson.databind.JsonNode;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -64,7 +66,27 @@ public class Esp32Controller {
     }
 
     @PostMapping("/{id}/send-message")
-    public Esp32Dto sendMessage(@PathVariable UUID id, @RequestParam String message) throws MqttException {
-        return service.sendMessage(id, message);
+    public Esp32Dto sendMessage(@PathVariable UUID id, @RequestParam String name, @RequestParam String message) throws MqttException {
+        return service.sendMessage(id, name, message);
+    }
+
+    @GetMapping("/devices/{id}")
+    public List<JsonNode> getDevices(@PathVariable UUID id){
+        return service.getDevices(id);
+    }
+
+    @PostMapping("/devices/{id}")
+    public Esp32Dto addDevice(@PathVariable UUID id, @RequestParam String name, @RequestParam String type){
+        return service.addDevice(id, name, type);
+    }
+
+    @DeleteMapping("/devices/{id}")
+    public Esp32Dto removeDevice(@PathVariable UUID id, @RequestParam String name){
+        return service.removeDevice(id, name);
+    }
+
+    @PatchMapping("/devices/{id}")
+    public Esp32Dto updateDevice(@PathVariable UUID id, @RequestParam String name, @RequestParam String newType){
+        return service.updateDevice(id, name, newType);
     }
 }

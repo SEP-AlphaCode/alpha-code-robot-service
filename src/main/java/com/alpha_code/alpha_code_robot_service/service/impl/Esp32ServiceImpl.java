@@ -8,6 +8,10 @@ import com.alpha_code.alpha_code_robot_service.mapper.Esp32Mapper;
 import com.alpha_code.alpha_code_robot_service.repository.Esp32Repository;
 import com.alpha_code.alpha_code_robot_service.service.Esp32Service;
 import com.alpha_code.alpha_code_robot_service.service.MqttService;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +26,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -184,11 +190,128 @@ public class Esp32ServiceImpl implements Esp32Service {
 
 
     @Override
-    public Esp32Dto sendMessage(UUID id, String message) throws MqttException {
+    public Esp32Dto sendMessage(UUID id, String name, String message) throws MqttException {
         var esp32 = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy ESP32"));
 
-        mqttService.publish(esp32.getTopicPub(), message);
+        if (!deviceExists(id, name)) {
+            throw new IllegalArgumentException("Thiết bị " + name + " không tồn tại");
+        }
+
+        mqttService.publish(id+"/"+name, message.toUpperCase());
         return Esp32Mapper.toDto(esp32);
     }
+
+    @Override
+    public List<JsonNode> getDevices(UUID id) {
+        var esp32 = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy ESP32"));
+        JsonNode metadata = esp32.getMetadata();
+
+        if (metadata == null || metadata.get("devices") == null)
+            return List.of();
+
+        JsonNode devices = metadata.get("devices");
+
+        if (!devices.isArray())
+            return List.of();
+
+        List<JsonNode> list = new ArrayList<>();
+        devices.forEach(list::add);
+
+        return list;
+    }
+
+    @Override
+    public boolean deviceExists(UUID id, String name) {
+        var esp32 = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy ESP32"));
+        return getDevices(id).stream()
+                .anyMatch(d -> d.get("name").asText().equalsIgnoreCase(name));
+    }
+
+    @Override
+    public Esp32Dto addDevice(UUID id, String name, String type) {
+        var esp32 = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy ESP32"));
+        ObjectMapper mapper = new ObjectMapper();
+
+        // Nếu metadata null → tạo mới
+        JsonNode root = esp32.getMetadata();
+        if (root == null || root.isNull()) {
+            root = mapper.createObjectNode();
+            ((ObjectNode) root).putArray("devices");
+        }
+
+        ArrayNode devicesNode = (ArrayNode) root.get("devices");
+        if (devicesNode == null) {
+            devicesNode = mapper.createArrayNode();
+            ((ObjectNode) root).set("devices", devicesNode);
+        }
+
+        // check trùng
+        if (deviceExists(id, name)) {
+            throw new IllegalArgumentException("Thiết bị " + name + " đã tồn tại");
+        }
+
+        // tạo device JSON object
+        ObjectNode dev = mapper.createObjectNode();
+        dev.put("name", name);
+        dev.put("type", type);
+
+        devicesNode.add(dev);
+
+        esp32.setMetadata(root);
+        esp32.setLastUpdated(LocalDateTime.now());
+
+        Esp32 savedEntity = repository.save(esp32);
+        return Esp32Mapper.toDto(savedEntity);
+    }
+
+    @Override
+    public Esp32Dto removeDevice(UUID id, String name) {
+        var esp32 = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy ESP32"));
+        ObjectMapper mapper = new ObjectMapper();
+
+        JsonNode root = esp32.getMetadata();
+        if (root == null || root.get("devices") == null)
+            return Esp32Mapper.toDto(esp32);
+
+        ArrayNode devicesNode = (ArrayNode) root.get("devices");
+        ArrayNode newList = mapper.createArrayNode();
+
+        for (JsonNode device : devicesNode) {
+            if (!device.get("name").asText().equalsIgnoreCase(name)) {
+                newList.add(device);
+            }
+        }
+
+        ((ObjectNode) root).set("devices", newList);
+
+        esp32.setMetadata(root);
+        esp32.setLastUpdated(LocalDateTime.now());
+
+        Esp32 savedEntity = repository.save(esp32);
+        return Esp32Mapper.toDto(savedEntity);
+    }
+
+    @Override
+    public Esp32Dto updateDevice(UUID id, String name, String newType) {
+        var esp32 = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy ESP32"));
+        JsonNode root = esp32.getMetadata();
+        ArrayNode devicesNode = (ArrayNode) root.get("devices");
+
+        for (JsonNode device : devicesNode) {
+            if (device.get("name").asText().equalsIgnoreCase(name)) {
+                ((ObjectNode) device).put("type", newType);
+            }
+        }
+
+        esp32.setLastUpdated(LocalDateTime.now());
+        Esp32 savedEntity = repository.save(esp32);
+        return Esp32Mapper.toDto(savedEntity);
+    }
+
 }
