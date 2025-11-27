@@ -15,10 +15,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "robot",
-        uniqueConstraints = {
-                @UniqueConstraint(columnNames = {"serial_number"})
-        })
+@Table(name = "robot")
 public class Robot {
     @Id
     @GeneratedValue(generator = "UUID")
