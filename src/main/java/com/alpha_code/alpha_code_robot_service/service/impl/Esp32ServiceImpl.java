@@ -214,18 +214,18 @@ public class Esp32ServiceImpl implements Esp32Service {
     private String localizeMessage(String message, String language) {
         if ("en".equalsIgnoreCase(language)) {
             switch (message.toLowerCase()) {
-                case "turn_on":
+                case "on":
                     return "The device is turned on.";
-                case "turn_off":
+                case "off":
                     return "The device is turned off.";
                 default:
                     return message; // fallback: trả nguyên message
             }
         } else if ("vi".equalsIgnoreCase(language)) {
             switch (message.toLowerCase()) {
-                case "turn_on":
+                case "on":
                     return "Thiết bị đã được bật.";
-                case "turn_off":
+                case "off":
                     return "Thiết bị đã được tắt.";
                 default:
                     return message; // fallback
