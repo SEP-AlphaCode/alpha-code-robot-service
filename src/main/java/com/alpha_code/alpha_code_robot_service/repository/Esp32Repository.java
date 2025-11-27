@@ -38,4 +38,7 @@ public interface Esp32Repository extends JpaRepository<Esp32, UUID> {
     );
 
     Optional<Esp32> findByAccountId(UUID accountId);
+
+    // Return an ESP32 for an account with the given status (e.g. status == 1 for active)
+    Optional<Esp32> findByAccountIdAndStatus(UUID accountId, Integer status);
 }

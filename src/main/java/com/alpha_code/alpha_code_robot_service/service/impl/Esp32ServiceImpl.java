@@ -105,6 +105,11 @@ public class Esp32ServiceImpl implements Esp32Service {
         esp32.setLastUpdated(LocalDateTime.now());
         esp32.setStatus(dto.getStatus());
 
+        // If this ESP32 is/was set to active, ensure account has no other active ESP32
+        if (Integer.valueOf(1).equals(esp32.getStatus())) {
+            ensureSingleEsp32ForAccount(esp32.getAccountId(), id);
+        }
+
         Esp32 savedEntity = repository.save(esp32);
         return Esp32Mapper.toDto(savedEntity);
     }
@@ -151,6 +156,31 @@ public class Esp32ServiceImpl implements Esp32Service {
 
         esp32.setLastUpdated(LocalDateTime.now());
 
+        // If this ESP32 is active after patch, ensure account has no other active ESP32
+        if (Integer.valueOf(1).equals(esp32.getStatus())) {
+            ensureSingleEsp32ForAccount(esp32.getAccountId(), id);
+        }
+
+        Esp32 savedEntity = repository.save(esp32);
+        return Esp32Mapper.toDto(savedEntity);
+    }
+
+    @Override
+    @Transactional
+    @CacheEvict(value = {"esp32_list"}, allEntries = true)
+    @CachePut(value = "esp32", key = "#id")
+    public Esp32Dto changeStatus(UUID id, Integer status) {
+        var esp32 = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy ESP32"));
+
+        // If activating, ensure the account has no other active ESP32
+        if (Integer.valueOf(1).equals(status)) {
+            ensureSingleEsp32ForAccount(esp32.getAccountId(), id);
+        }
+
+        esp32.setStatus(status);
+        esp32.setLastUpdated(LocalDateTime.now());
+
         Esp32 savedEntity = repository.save(esp32);
         return Esp32Mapper.toDto(savedEntity);
     }
@@ -176,29 +206,10 @@ public class Esp32ServiceImpl implements Esp32Service {
      */
     private void ensureSingleEsp32ForAccount(UUID accountId, UUID currentEsp32Id) {
         if (accountId == null) return;
-        var existing = repository.findByAccountId(accountId);
-        if (existing.isPresent()) {
-            Esp32 found = existing.get();
-            // Only consider active devices (status == 1)
-            if (Integer.valueOf(1).equals(found.getStatus()) && !found.getId().equals(currentEsp32Id)) {
-                throw new IllegalArgumentException("Tài khoản đã có ESP32 đang hoạt động. Chỉ cho phép 1 ESP32 hoạt động / tài khoản.");
-            }
+        var existingActive = repository.findByAccountIdAndStatus(accountId, Integer.valueOf(1));
+        if (existingActive.isPresent() && !existingActive.get().getId().equals(currentEsp32Id)) {
+            throw new IllegalArgumentException("Tài khoản đã có ESP32 đang hoạt động. Chỉ cho phép 1 ESP32 hoạt động / tài khoản.");
         }
-    }
-
-    @Override
-    @Transactional
-    @CacheEvict(value = {"esp32_list"}, allEntries = true)
-    @CachePut(value = "esp32", key = "#id")
-    public Esp32Dto changeStatus(UUID id, Integer status) {
-        var esp32 = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy ESP32"));
-
-        esp32.setStatus(status);
-        esp32.setLastUpdated(LocalDateTime.now());
-
-        Esp32 savedEntity = repository.save(esp32);
-        return Esp32Mapper.toDto(savedEntity);
     }
 
     @PostConstruct
