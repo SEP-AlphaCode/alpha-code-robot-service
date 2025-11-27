@@ -2,6 +2,7 @@ package com.alpha_code.alpha_code_robot_service.controller;
 
 import com.alpha_code.alpha_code_robot_service.dto.Esp32Dto;
 import com.alpha_code.alpha_code_robot_service.dto.PagedResult;
+import com.alpha_code.alpha_code_robot_service.dto.response.VoiceResponse;
 import com.alpha_code.alpha_code_robot_service.service.Esp32Service;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -66,8 +67,8 @@ public class Esp32Controller {
     }
 
     @PostMapping("/{id}/send-message")
-    public Esp32Dto sendMessage(@PathVariable UUID id, @RequestParam String name, @RequestParam String message) throws MqttException {
-        return service.sendMessage(id, name, message);
+    public VoiceResponse sendMessage(@PathVariable UUID id, @RequestParam String name, @RequestParam String message, @RequestParam String language) throws MqttException {
+        return service.sendMessage(id, name, message, language);
     }
 
     @GetMapping("/devices/{id}")
