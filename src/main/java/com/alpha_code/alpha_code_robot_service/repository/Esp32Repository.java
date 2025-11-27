@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import javax.swing.text.html.Option;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -34,4 +36,6 @@ public interface Esp32Repository extends JpaRepository<Esp32, UUID> {
             @Param("status") Integer status,
             Pageable pageable
     );
+
+    Optional<Esp32> findByAccountId(UUID accountId);
 }
