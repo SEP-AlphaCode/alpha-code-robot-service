@@ -2,6 +2,7 @@ package com.alpha_code.alpha_code_robot_service.service.impl;
 
 import com.alpha_code.alpha_code_robot_service.dto.Esp32Dto;
 import com.alpha_code.alpha_code_robot_service.dto.PagedResult;
+import com.alpha_code.alpha_code_robot_service.dto.response.VoiceResponse;
 import com.alpha_code.alpha_code_robot_service.entity.Esp32;
 import com.alpha_code.alpha_code_robot_service.exception.ResourceNotFoundException;
 import com.alpha_code.alpha_code_robot_service.mapper.Esp32Mapper;
@@ -190,17 +191,51 @@ public class Esp32ServiceImpl implements Esp32Service {
 
 
     @Override
-    public Esp32Dto sendMessage(UUID id, String name, String message) throws MqttException {
+    public VoiceResponse sendMessage(UUID id, String name, String message, String language) throws MqttException {
+        // 1. Lấy ESP32
         var esp32 = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy ESP32"));
 
+        // 2. Kiểm tra thiết bị tồn tại
         if (!deviceExists(id, name)) {
             throw new IllegalArgumentException("Thiết bị " + name + " không tồn tại");
         }
 
-        mqttService.publish(id+"/"+name, message.toUpperCase());
-        return Esp32Mapper.toDto(esp32);
+        // 3. Gửi lệnh MQTT
+        mqttService.publish(id + "/" + name, message.toUpperCase());
+
+        // 4. Chuẩn hóa message theo language
+        String responseMessage = localizeMessage(message, language);
+
+        // 5. Trả về message cho robot đọc
+        return new VoiceResponse(true, responseMessage);
     }
+
+    private String localizeMessage(String message, String language) {
+        if ("en".equalsIgnoreCase(language)) {
+            switch (message.toLowerCase()) {
+                case "turn_on":
+                    return "The device is turned on.";
+                case "turn_off":
+                    return "The device is turned off.";
+                default:
+                    return message; // fallback: trả nguyên message
+            }
+        } else if ("vi".equalsIgnoreCase(language)) {
+            switch (message.toLowerCase()) {
+                case "turn_on":
+                    return "Thiết bị đã được bật.";
+                case "turn_off":
+                    return "Thiết bị đã được tắt.";
+                default:
+                    return message; // fallback
+            }
+        }
+
+        return message; // default fallback
+    }
+
+
 
     @Override
     public List<JsonNode> getDevices(UUID id) {

@@ -2,6 +2,7 @@ package com.alpha_code.alpha_code_robot_service.service;
 
 import com.alpha_code.alpha_code_robot_service.dto.Esp32Dto;
 import com.alpha_code.alpha_code_robot_service.dto.PagedResult;
+import com.alpha_code.alpha_code_robot_service.dto.response.VoiceResponse;
 import com.alpha_code.alpha_code_robot_service.entity.Esp32;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -35,7 +36,7 @@ public interface Esp32Service {
 
     Esp32Dto changeStatus(UUID id, Integer status);
 
-    Esp32Dto sendMessage(UUID id, String name, String message) throws MqttException;
+    VoiceResponse sendMessage(UUID id, String name, String message, String language) throws MqttException;
 
     List<JsonNode> getDevices(UUID id);
 
