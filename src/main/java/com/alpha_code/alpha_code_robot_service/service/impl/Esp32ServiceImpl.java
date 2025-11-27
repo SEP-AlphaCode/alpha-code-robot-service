@@ -71,6 +71,9 @@ public class Esp32ServiceImpl implements Esp32Service {
     @Transactional
     @CacheEvict(value = {"esp32_list"}, allEntries = true)
     public Esp32Dto create(Esp32Dto dto) {
+        // ensure an account has only one esp32
+        ensureSingleEsp32ForAccount(dto.getAccountId(), null);
+
         var esp32 = Esp32Mapper.toEntity(dto);
         esp32.setCreatedAt(LocalDateTime.now());
         Esp32 savedEntity = repository.save(esp32);
@@ -85,7 +88,12 @@ public class Esp32ServiceImpl implements Esp32Service {
         var esp32 = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy ESP32"));
 
-        esp32.setAccountId(dto.getAccountId());
+        // If accountId is being changed, ensure the target account does not already own another ESP32
+        if (dto.getAccountId() != null) {
+            ensureSingleEsp32ForAccount(dto.getAccountId(), id);
+            esp32.setAccountId(dto.getAccountId());
+        }
+
         esp32.setMacAddress(dto.getMacAddress());
         esp32.setName(dto.getName());
         esp32.setLastSeen(dto.getLastSeen());
@@ -110,6 +118,7 @@ public class Esp32ServiceImpl implements Esp32Service {
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy ESP32"));
 
         if (dto.getAccountId() != null) {
+            ensureSingleEsp32ForAccount(dto.getAccountId(), id);
             esp32.setAccountId(dto.getAccountId());
         }
         if (dto.getMacAddress() != null) {
@@ -158,6 +167,23 @@ public class Esp32ServiceImpl implements Esp32Service {
 
         repository.save(esp32);
         return "Esp32 deleted successfully";
+    }
+
+    /**
+     * Ensure that the given accountId does not already have an Esp32 assigned to a different Esp32 id.
+     * Only ESP32 with status == 1 (active) count toward the "one per account" rule.
+     * If accountId is null nothing is checked. currentEsp32Id can be null for creates.
+     */
+    private void ensureSingleEsp32ForAccount(UUID accountId, UUID currentEsp32Id) {
+        if (accountId == null) return;
+        var existing = repository.findByAccountId(accountId);
+        if (existing.isPresent()) {
+            Esp32 found = existing.get();
+            // Only consider active devices (status == 1)
+            if (Integer.valueOf(1).equals(found.getStatus()) && !found.getId().equals(currentEsp32Id)) {
+                throw new IllegalArgumentException("Tài khoản đã có ESP32 đang hoạt động. Chỉ cho phép 1 ESP32 hoạt động / tài khoản.");
+            }
+        }
     }
 
     @Override
