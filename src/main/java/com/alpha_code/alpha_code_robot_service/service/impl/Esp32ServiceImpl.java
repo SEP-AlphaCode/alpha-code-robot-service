@@ -349,4 +349,11 @@ public class Esp32ServiceImpl implements Esp32Service {
         return Esp32Mapper.toDto(savedEntity);
     }
 
+    @Override
+    public Esp32Dto getEsp32ByUser(UUID id) {
+        var esp32 = repository.findByAccountId(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy ESP32"));
+        return Esp32Mapper.toDto(esp32);
+    }
+
 }

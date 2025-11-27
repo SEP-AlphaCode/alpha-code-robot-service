@@ -90,4 +90,9 @@ public class Esp32Controller {
     public Esp32Dto updateDevice(@PathVariable UUID id, @RequestParam String name, @RequestParam String newType){
         return service.updateDevice(id, name, newType);
     }
+
+    @GetMapping("account/{id}")
+    public Esp32Dto getEsp32ByUser(@PathVariable UUID id){
+        return service.getEsp32ByUser(id);
+    }
 }

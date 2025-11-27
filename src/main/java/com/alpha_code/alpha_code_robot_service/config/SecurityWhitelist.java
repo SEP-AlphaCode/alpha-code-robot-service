@@ -14,6 +14,7 @@ public class SecurityWhitelist {
             "/docs",
             "/",
             "/api/v1/auth/**",
+            "/api/v1/esp32s/{id}/send-message",
     };
 
     // Permit GET only

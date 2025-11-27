@@ -47,4 +47,6 @@ public interface Esp32Service {
     Esp32Dto removeDevice(UUID id, String name);
 
     Esp32Dto updateDevice(UUID id, String name, String newType);
+
+    Esp32Dto getEsp32ByUser(UUID id);
 }
