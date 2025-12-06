@@ -29,10 +29,8 @@ public class Esp32Controller {
                                          @RequestParam(value = "accountId", required = false) UUID accountId,
                                          @RequestParam(value = "name", required = false) String name,
                                          @RequestParam(value = "firmwareVersion", required = false) Integer firmwareVersion,
-                                         @RequestParam(value = "topicPub", required = false) String topicPub,
-                                         @RequestParam(value = "topicSub", required = false) String topicSub,
                                          @RequestParam(value = "status", required = false) Integer status){
-        return service.searchAll(page, size, accountId, name, firmwareVersion, topicPub, topicSub, status);
+        return service.searchAll(page, size, accountId, name, firmwareVersion, status);
     }
 
     @GetMapping("/{id}")

@@ -13,8 +13,6 @@ public class Esp32Mapper {
         dto.setName(esp32.getName());
         dto.setFirmwareVersion(esp32.getFirmwareVersion());
         dto.setMetadata(esp32.getMetadata());
-        dto.setTopicPub(esp32.getTopicPub());
-        dto.setTopicSub(esp32.getTopicSub());
         dto.setMessage(esp32.getMessage());
         dto.setCreatedAt(esp32.getCreatedAt());
         dto.setLastUpdated(esp32.getLastUpdated());
@@ -31,8 +29,6 @@ public class Esp32Mapper {
         esp32.setName(dto.getName());
         esp32.setFirmwareVersion(dto.getFirmwareVersion());
         esp32.setMetadata(dto.getMetadata());
-        esp32.setTopicPub(dto.getTopicPub());
-        esp32.setTopicSub(dto.getTopicSub());
         esp32.setMessage(dto.getMessage());
         esp32.setCreatedAt(dto.getCreatedAt());
         esp32.setLastUpdated(dto.getLastUpdated());
