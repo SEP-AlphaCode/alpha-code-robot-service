@@ -197,7 +197,7 @@ public class Esp32ServiceImpl implements Esp32Service {
         // Subscribe các topicSub trong DB khi service khởi chạy
         repository.findAll().forEach(esp32 -> {
             mqttService.subscribe(esp32.getId().toString(), (topic, payload) -> {
-                log.info("📥 ESP32[{}] -> {}", esp32.getId(), payload);
+                log.info("ESP32[{}] -> {}", esp32.getId(), payload);
 
                 esp32.setMessage(payload);
                 repository.save(esp32);
@@ -308,7 +308,7 @@ public class Esp32ServiceImpl implements Esp32Service {
         // tạo device JSON object
         ObjectNode dev = mapper.createObjectNode();
         dev.put("name", name);
-        dev.put("type", type);
+        dev.put("type", type.toLowerCase());
 
         devicesNode.add(dev);
 
@@ -348,7 +348,7 @@ public class Esp32ServiceImpl implements Esp32Service {
     }
 
     @Override
-    public Esp32Dto updateDevice(UUID id, String name, String newType) {
+    public Esp32Dto updateDevice(UUID id, String name, String newName, String newType) {
         var esp32 = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy ESP32"));
         JsonNode root = esp32.getMetadata();
@@ -356,7 +356,8 @@ public class Esp32ServiceImpl implements Esp32Service {
 
         for (JsonNode device : devicesNode) {
             if (device.get("name").asText().equalsIgnoreCase(name)) {
-                ((ObjectNode) device).put("type", newType);
+                if (newName != null && !deviceExists(id, newName)) ((ObjectNode) device).put("name", newName);
+                if (newType != null) ((ObjectNode) device).put("type", newType.toUpperCase());
             }
         }
 

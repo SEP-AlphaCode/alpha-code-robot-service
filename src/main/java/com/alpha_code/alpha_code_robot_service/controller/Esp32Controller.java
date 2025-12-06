@@ -84,8 +84,8 @@ public class Esp32Controller {
     }
 
     @PatchMapping("/devices/{id}")
-    public Esp32Dto updateDevice(@PathVariable UUID id, @RequestParam String name, @RequestParam String newType){
-        return service.updateDevice(id, name, newType);
+    public Esp32Dto updateDevice(@PathVariable UUID id, @RequestParam String name, @RequestParam(required = false) String newName, @RequestParam(required = false) String newType){
+        return service.updateDevice(id, name, newName, newType);
     }
 
     @GetMapping("account/{id}")
