@@ -40,7 +40,7 @@ public class Esp32ServiceImpl implements Esp32Service {
     private final MqttService mqttService;
 
     @Override
-    @Cacheable(value = "esp32_list", key = "{#page, #size, #accountId, #name, #firmwareVersion, #topicPub, #topicSub, #status}")
+    @Cacheable(value = "esp32_list", key = "{#page, #size, #accountId, #name, #firmwareVersion, #status}")
     public PagedResult<Esp32Dto> searchAll(int page,
                                            int size,
                                            UUID accountId,
