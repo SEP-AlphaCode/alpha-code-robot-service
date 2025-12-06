@@ -10,9 +10,7 @@ public class Esp32Mapper {
         Esp32Dto dto = new Esp32Dto();
         dto.setId(esp32.getId());
         dto.setAccountId(esp32.getAccountId());
-        dto.setMacAddress(esp32.getMacAddress());
         dto.setName(esp32.getName());
-        dto.setLastSeen(esp32.getLastSeen());
         dto.setFirmwareVersion(esp32.getFirmwareVersion());
         dto.setMetadata(esp32.getMetadata());
         dto.setTopicPub(esp32.getTopicPub());
@@ -30,9 +28,7 @@ public class Esp32Mapper {
         Esp32 esp32 = new Esp32();
         esp32.setId(dto.getId());
         esp32.setAccountId(dto.getAccountId());
-        esp32.setMacAddress(dto.getMacAddress());
         esp32.setName(dto.getName());
-        esp32.setLastSeen(dto.getLastSeen());
         esp32.setFirmwareVersion(dto.getFirmwareVersion());
         esp32.setMetadata(dto.getMetadata());
         esp32.setTopicPub(dto.getTopicPub());

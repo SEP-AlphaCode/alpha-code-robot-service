@@ -38,16 +38,8 @@ public class Esp32 {
 
     @Size(max = 255)
     @NotNull
-    @Column(name = "mac_address", nullable = false)
-    private String macAddress;
-
-    @Size(max = 255)
-    @NotNull
     @Column(name = "name", nullable = false)
     private String name;
-
-    @Column(name = "last_seen")
-    private LocalDateTime lastSeen;
 
     @Column(name = "firmware_version")
     private Integer firmwareVersion;

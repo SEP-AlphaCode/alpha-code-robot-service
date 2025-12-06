@@ -24,15 +24,8 @@ public class Esp32Dto implements Serializable {
     @NotNull(message = "accountId is required", groups = {OnCreate.class})
     private UUID accountId;
 
-    @NotNull(message = "macAddress is required", groups = {OnCreate.class})
-    @Size(min = 12, max = 12, message = "macAddress must be 12 characters")
-    private String macAddress;
-
     @NotNull(message = "name is required", groups = {OnCreate.class})
     private String name;
-
-    @JsonProperty(access =  JsonProperty.Access.READ_ONLY)
-    private LocalDateTime lastSeen;
 
     @NotNull(message = "firmwareVersion is required", groups = {OnCreate.class})
     private Integer firmwareVersion;

@@ -16,7 +16,6 @@ public interface Esp32Service {
             int page,
             int size,
             UUID accountId,
-            String macAddress,
             String name,
             Integer firmwareVersion,
             String topicPub,

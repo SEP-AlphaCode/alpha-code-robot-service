@@ -61,5 +61,10 @@ grpc:
       keepAliveWithoutCalls: true
       negotiationType: plaintext
 
+video:
+  api:
+    key: ${VIDEO_API_KEY:1234567890}
+    url: ${VIDEO_API_URL:https://api.runwayml.com/v1}
+
 
 

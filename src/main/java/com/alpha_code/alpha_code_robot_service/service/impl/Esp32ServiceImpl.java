@@ -40,11 +40,10 @@ public class Esp32ServiceImpl implements Esp32Service {
     private final MqttService mqttService;
 
     @Override
-    @Cacheable(value = "esp32_list", key = "{#page, #size, #accountId, #macAddress, #name, #firmwareVersion, #topicPub, #topicSub, #status}")
+    @Cacheable(value = "esp32_list", key = "{#page, #size, #accountId, #name, #firmwareVersion, #topicPub, #topicSub, #status}")
     public PagedResult<Esp32Dto> searchAll(int page,
                                            int size,
                                            UUID accountId,
-                                           String macAddress,
                                            String name,
                                            Integer firmwareVersion,
                                            String topicPub,
@@ -53,7 +52,7 @@ public class Esp32ServiceImpl implements Esp32Service {
         Pageable pageable = PageRequest.of(page - 1, size);
         Page<Esp32> pagedResult;
 
-        pagedResult = repository.searchAll(accountId, macAddress, name, firmwareVersion,
+        pagedResult = repository.searchAll(accountId,  name, firmwareVersion,
                 topicPub, topicSub, status, pageable);
 
         return new PagedResult<>(pagedResult.map(Esp32Mapper::toDto));
@@ -94,9 +93,7 @@ public class Esp32ServiceImpl implements Esp32Service {
             esp32.setAccountId(dto.getAccountId());
         }
 
-        esp32.setMacAddress(dto.getMacAddress());
         esp32.setName(dto.getName());
-        esp32.setLastSeen(dto.getLastSeen());
         esp32.setFirmwareVersion(dto.getFirmwareVersion());
         esp32.setMetadata(dto.getMetadata());
         esp32.setTopicPub(dto.getTopicPub());
@@ -126,14 +123,8 @@ public class Esp32ServiceImpl implements Esp32Service {
             ensureSingleEsp32ForAccount(dto.getAccountId(), id);
             esp32.setAccountId(dto.getAccountId());
         }
-        if (dto.getMacAddress() != null) {
-            esp32.setMacAddress(dto.getMacAddress());
-        }
         if (dto.getName() != null) {
             esp32.setName(dto.getName());
-        }
-        if (dto.getLastSeen() != null) {
-            esp32.setLastSeen(dto.getLastSeen());
         }
         if (dto.getFirmwareVersion() != null) {
             esp32.setFirmwareVersion(dto.getFirmwareVersion());
@@ -220,7 +211,6 @@ public class Esp32ServiceImpl implements Esp32Service {
                 log.info("📥 ESP32[{}] -> {}", esp32.getId(), payload);
 
                 esp32.setMessage(payload);
-                esp32.setLastSeen(LocalDateTime.now());
                 repository.save(esp32);
             });
         });
