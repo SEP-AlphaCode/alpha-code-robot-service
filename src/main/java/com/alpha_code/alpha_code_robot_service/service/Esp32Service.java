@@ -18,8 +18,6 @@ public interface Esp32Service {
             UUID accountId,
             String name,
             Integer firmwareVersion,
-            String topicPub,
-            String topicSub,
             Integer status
     );
 

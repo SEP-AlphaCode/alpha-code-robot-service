@@ -32,12 +32,6 @@ public class Esp32Dto implements Serializable {
 
     private JsonNode metadata;
 
-    @NotNull(message = "topicPub is required", groups = {OnCreate.class})
-    private String topicPub;
-
-    @NotNull(message = "topicSub is required", groups = {OnCreate.class})
-    private String topicSub;
-
     private String message;
 
     @JsonProperty(access =  JsonProperty.Access.READ_ONLY)
