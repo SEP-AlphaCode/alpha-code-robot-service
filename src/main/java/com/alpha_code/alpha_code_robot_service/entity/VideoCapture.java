@@ -42,7 +42,7 @@ public class VideoCapture {
     @Column(name = "image", nullable = false)
     private String image;
 
-    @Column(name = "videoUrl")
+    @Column(name = "video_url")
     private String videoUrl;
 
     @NotNull
