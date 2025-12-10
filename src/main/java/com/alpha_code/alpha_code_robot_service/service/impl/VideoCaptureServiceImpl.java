@@ -161,7 +161,7 @@ public class VideoCaptureServiceImpl implements VideoCaptureService {
             HttpEntity<org.springframework.util.MultiValueMap<String, Object>> request = new HttpEntity<>(body, headers);
 
             // Gọi API
-            String apiEndpoint = videoApiUrl + "/generate";
+            String apiEndpoint = videoApiUrl + "/video/generate";
             log.info("Calling video generation API at: {}", apiEndpoint);
             log.info("Description: {}", description);
 
