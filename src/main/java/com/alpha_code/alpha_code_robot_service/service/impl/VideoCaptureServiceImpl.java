@@ -23,8 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -35,10 +33,7 @@ public class VideoCaptureServiceImpl implements VideoCaptureService {
     private final VideoCaptureRepository videoCaptureRepository;
     private final ObjectMapper objectMapper;
 
-    @Value("${video.api.key}")
-    private String videoApiKey;
-
-    @Value("${video.api.url}")
+    @Value("${python.api.url}")
     private String videoApiUrl;
 
     @Override
@@ -130,28 +125,48 @@ public class VideoCaptureServiceImpl implements VideoCaptureService {
 
     /**
      * Gọi API để generate video từ image và description
+     * API endpoint expects multipart/form-data with file upload
      */
     private String callVideoGenerationApi(String imageUrl, String description) {
         try {
             RestTemplate restTemplate = new RestTemplate();
 
-            // Chuẩn bị headers
+            // Download image từ imageUrl
+            log.info("Downloading image from URL: {}", imageUrl);
+            byte[] imageBytes = downloadImageFromUrl(imageUrl, restTemplate);
+            log.info("Image downloaded successfully, size: {} bytes", imageBytes.length);
+
+            // Chuẩn bị headers cho multipart/form-data
             HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            headers.setBearerAuth(videoApiKey);
+            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
-            // Chuẩn bị request body
-            Map<String, Object> requestBody = new HashMap<>();
-            requestBody.put("image_url", imageUrl);
-            requestBody.put("prompt", description);
-            requestBody.put("duration", 5); // video duration in seconds
+            // Chuẩn bị multipart request body
+            org.springframework.util.MultiValueMap<String, Object> body = new org.springframework.util.LinkedMultiValueMap<>();
 
-            HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);
+            // Add file part
+            org.springframework.core.io.ByteArrayResource fileResource = new org.springframework.core.io.ByteArrayResource(imageBytes) {
+                @Override
+                public String getFilename() {
+                    return "image.jpg"; // Tên file
+                }
+            };
+            body.add("file", fileResource);
+
+            // Add description part
+            body.add("description", description != null ? description : "");
+
+            // Add use_default_template part (khuyến nghị sử dụng template mặc định)
+            body.add("use_default_template", "true");
+
+            HttpEntity<org.springframework.util.MultiValueMap<String, Object>> request = new HttpEntity<>(body, headers);
 
             // Gọi API
-            log.info("Calling video generation API at: {}", videoApiUrl + "/generate");
+            String apiEndpoint = videoApiUrl + "/generate";
+            log.info("Calling video generation API at: {}", apiEndpoint);
+            log.info("Description: {}", description);
+
             ResponseEntity<String> response = restTemplate.exchange(
-                    videoApiUrl + "/generate",
+                    apiEndpoint,
                     HttpMethod.POST,
                     request,
                     String.class
@@ -159,21 +174,20 @@ public class VideoCaptureServiceImpl implements VideoCaptureService {
 
             if (response.getStatusCode() == HttpStatus.OK || response.getStatusCode() == HttpStatus.CREATED) {
                 JsonNode jsonNode = objectMapper.readTree(response.getBody());
-                String videoUrl = jsonNode.path("video_url").asText();
+
+                // API trả về structure: { "message": "...", "data": { "video_url": "...", ... } }
+                JsonNode dataNode = jsonNode.path("data");
+                String videoUrl = dataNode.path("video_url").asText();
 
                 if (videoUrl == null || videoUrl.isEmpty()) {
-                    // Nếu không có video_url ngay, có thể cần poll status
-                    String taskId = jsonNode.path("task_id").asText();
-                    if (taskId != null && !taskId.isEmpty()) {
-                        videoUrl = pollVideoGenerationStatus(taskId, restTemplate, headers);
-                    } else {
-                        throw new RuntimeException("No video URL or task ID in response");
-                    }
+                    log.error("No video URL in response. Response body: {}", response.getBody());
+                    throw new RuntimeException("No video URL returned from API");
                 }
 
                 log.info("Video generated successfully: {}", videoUrl);
                 return videoUrl;
             } else {
+                log.error("API returned error status: {}. Response: {}", response.getStatusCode(), response.getBody());
                 throw new RuntimeException("API returned error status: " + response.getStatusCode());
             }
 
@@ -184,48 +198,22 @@ public class VideoCaptureServiceImpl implements VideoCaptureService {
     }
 
     /**
-     * Poll API để kiểm tra trạng thái generation (nếu API không trả video URL ngay)
+     * Download image từ URL
      */
-    private String pollVideoGenerationStatus(String taskId, RestTemplate restTemplate, HttpHeaders headers) {
+    private byte[] downloadImageFromUrl(String imageUrl, RestTemplate restTemplate) {
         try {
-            int maxAttempts = 60; // Tối đa 60 lần (5 phút với mỗi lần 5 giây)
-            int attempt = 0;
+            log.info("Downloading image from: {}", imageUrl);
+            ResponseEntity<byte[]> response = restTemplate.getForEntity(imageUrl, byte[].class);
 
-            while (attempt < maxAttempts) {
-                Thread.sleep(5000); // Đợi 5 giây giữa các lần poll
-
-                HttpEntity<Void> request = new HttpEntity<>(headers);
-                ResponseEntity<String> response = restTemplate.exchange(
-                        videoApiUrl + "/status/" + taskId,
-                        HttpMethod.GET,
-                        request,
-                        String.class
-                );
-
-                if (response.getStatusCode() == HttpStatus.OK) {
-                    JsonNode jsonNode = objectMapper.readTree(response.getBody());
-                    String status = jsonNode.path("status").asText();
-
-                    if ("completed".equalsIgnoreCase(status)) {
-                        String videoUrl = jsonNode.path("video_url").asText();
-                        log.info("Video generation completed: {}", videoUrl);
-                        return videoUrl;
-                    } else if ("failed".equalsIgnoreCase(status)) {
-                        throw new RuntimeException("Video generation failed");
-                    }
-                    // Nếu status là "processing", tiếp tục poll
-                }
-
-                attempt++;
+            if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
+                return response.getBody();
+            } else {
+                throw new RuntimeException("Failed to download image from URL: " + imageUrl);
             }
-
-            throw new RuntimeException("Video generation timeout");
-
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException("Polling interrupted", e);
         } catch (Exception e) {
-            throw new RuntimeException("Error polling video generation status", e);
+            log.error("Error downloading image from URL: {}", imageUrl, e);
+            throw new RuntimeException("Failed to download image: " + e.getMessage(), e);
         }
     }
+
 }
