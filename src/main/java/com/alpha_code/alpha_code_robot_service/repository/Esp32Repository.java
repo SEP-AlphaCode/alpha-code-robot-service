@@ -20,8 +20,6 @@ public interface Esp32Repository extends JpaRepository<Esp32, UUID> {
         WHERE (:accountId IS NULL OR e.accountId = :accountId)
           AND (:name IS NULL OR :name = '' OR LOWER(e.name) LIKE LOWER(CONCAT('%', :name, '%')))
           AND (:firmwareVersion IS NULL OR e.firmwareVersion = :firmwareVersion)
-          AND (:topicPub IS NULL OR :topicPub = '' OR LOWER(e.topicPub) LIKE LOWER(CONCAT('%', :topicPub, '%')))
-          AND (:topicSub IS NULL OR :topicSub = '' OR LOWER(e.topicSub) LIKE LOWER(CONCAT('%', :topicSub, '%')))
           AND (:status IS NULL OR e.status = :status)
           AND (e.status <> 0)
     """)
@@ -29,8 +27,6 @@ public interface Esp32Repository extends JpaRepository<Esp32, UUID> {
             @Param("accountId") UUID accountId,
             @Param("name") String name,
             @Param("firmwareVersion") Integer firmwareVersion,
-            @Param("topicPub") String topicPub,
-            @Param("topicSub") String topicSub,
             @Param("status") Integer status,
             Pageable pageable
     );

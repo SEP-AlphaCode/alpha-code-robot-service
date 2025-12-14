@@ -48,15 +48,6 @@ public class Esp32 {
     @Type(JsonType.class)
     private JsonNode metadata;
 
-    @Size(max = 255)
-    @Column(name = "topic_pub")
-    private String topicPub;
-
-    @Size(max = 255)
-    @NotNull
-    @Column(name = "topic_sub", nullable = false)
-    private String topicSub;
-
     @Column(name = "message", nullable = false)
     @NotNull
     private String message;

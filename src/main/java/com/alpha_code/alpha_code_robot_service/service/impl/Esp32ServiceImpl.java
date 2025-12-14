@@ -40,20 +40,17 @@ public class Esp32ServiceImpl implements Esp32Service {
     private final MqttService mqttService;
 
     @Override
-    @Cacheable(value = "esp32_list", key = "{#page, #size, #accountId, #name, #firmwareVersion, #topicPub, #topicSub, #status}")
+    @Cacheable(value = "esp32_list", key = "{#page, #size, #accountId, #name, #firmwareVersion, #status}")
     public PagedResult<Esp32Dto> searchAll(int page,
                                            int size,
                                            UUID accountId,
                                            String name,
                                            Integer firmwareVersion,
-                                           String topicPub,
-                                           String topicSub,
                                            Integer status) {
         Pageable pageable = PageRequest.of(page - 1, size);
         Page<Esp32> pagedResult;
 
-        pagedResult = repository.searchAll(accountId,  name, firmwareVersion,
-                topicPub, topicSub, status, pageable);
+        pagedResult = repository.searchAll(accountId,  name, firmwareVersion, status, pageable);
 
         return new PagedResult<>(pagedResult.map(Esp32Mapper::toDto));
     }
@@ -96,8 +93,6 @@ public class Esp32ServiceImpl implements Esp32Service {
         esp32.setName(dto.getName());
         esp32.setFirmwareVersion(dto.getFirmwareVersion());
         esp32.setMetadata(dto.getMetadata());
-        esp32.setTopicPub(dto.getTopicPub());
-        esp32.setTopicSub(dto.getTopicSub());
         esp32.setMessage(dto.getMessage());
         esp32.setLastUpdated(LocalDateTime.now());
         esp32.setStatus(dto.getStatus());
@@ -131,12 +126,6 @@ public class Esp32ServiceImpl implements Esp32Service {
         }
         if (dto.getMetadata() != null) {
             esp32.setMetadata(dto.getMetadata());
-        }
-        if (dto.getTopicPub() != null) {
-            esp32.setTopicPub(dto.getTopicPub());
-        }
-        if (dto.getTopicSub() != null) {
-            esp32.setTopicSub(dto.getTopicSub());
         }
         if (dto.getMessage() != null) {
             esp32.setMessage(dto.getMessage());
@@ -207,8 +196,8 @@ public class Esp32ServiceImpl implements Esp32Service {
     public void init() {
         // Subscribe các topicSub trong DB khi service khởi chạy
         repository.findAll().forEach(esp32 -> {
-            mqttService.subscribe(esp32.getTopicSub(), (topic, payload) -> {
-                log.info("📥 ESP32[{}] -> {}", esp32.getId(), payload);
+            mqttService.subscribe(esp32.getId().toString(), (topic, payload) -> {
+                log.info("ESP32[{}] -> {}", esp32.getId(), payload);
 
                 esp32.setMessage(payload);
                 repository.save(esp32);
@@ -319,7 +308,7 @@ public class Esp32ServiceImpl implements Esp32Service {
         // tạo device JSON object
         ObjectNode dev = mapper.createObjectNode();
         dev.put("name", name);
-        dev.put("type", type);
+        dev.put("type", type.toLowerCase());
 
         devicesNode.add(dev);
 
@@ -359,7 +348,7 @@ public class Esp32ServiceImpl implements Esp32Service {
     }
 
     @Override
-    public Esp32Dto updateDevice(UUID id, String name, String newType) {
+    public Esp32Dto updateDevice(UUID id, String name, String newName, String newType) {
         var esp32 = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy ESP32"));
         JsonNode root = esp32.getMetadata();
@@ -367,7 +356,8 @@ public class Esp32ServiceImpl implements Esp32Service {
 
         for (JsonNode device : devicesNode) {
             if (device.get("name").asText().equalsIgnoreCase(name)) {
-                ((ObjectNode) device).put("type", newType);
+                if (newName != null && !deviceExists(id, newName)) ((ObjectNode) device).put("name", newName);
+                if (newType != null) ((ObjectNode) device).put("type", newType.toUpperCase());
             }
         }
 
