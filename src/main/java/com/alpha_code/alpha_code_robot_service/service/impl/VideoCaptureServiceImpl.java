@@ -7,6 +7,7 @@ import com.alpha_code.alpha_code_robot_service.enums.VideoCaptureEnum;
 import com.alpha_code.alpha_code_robot_service.exception.ResourceNotFoundException;
 import com.alpha_code.alpha_code_robot_service.mapper.VideoCaptureMapper;
 import com.alpha_code.alpha_code_robot_service.repository.VideoCaptureRepository;
+import com.alpha_code.alpha_code_robot_service.service.S3Service;
 import com.alpha_code.alpha_code_robot_service.service.VideoCaptureService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -32,6 +33,7 @@ public class VideoCaptureServiceImpl implements VideoCaptureService {
 
     private final VideoCaptureRepository videoCaptureRepository;
     private final ObjectMapper objectMapper;
+    private final S3Service s3Service;
 
     @Value("${python.api.url}")
     private String videoApiUrl;
@@ -88,10 +90,23 @@ public class VideoCaptureServiceImpl implements VideoCaptureService {
 
         try {
             // Gọi API để generate video
-            String videoUrl = callVideoGenerationApi(videoCapture.getImage(), description);
+            String tempVideoUrl = callVideoGenerationApi(videoCapture.getImage(), description);
 
-            // Cập nhật video capture
-            videoCapture.setVideoUrl(videoUrl);
+            log.info("Video generated with temporary URL: {}", tempVideoUrl);
+
+            // Download video từ URL tạm
+            byte[] videoBytes = downloadVideoFromUrl(tempVideoUrl);
+            log.info("Video downloaded successfully, size: {} bytes", videoBytes.length);
+
+            // Upload video lên S3
+            String s3Key = String.format("videos/%s/%s.mp4",
+                    videoCapture.getAccountId(),
+                    videoCaptureId);
+            String s3VideoUrl = s3Service.uploadBytes(videoBytes, s3Key, "video/mp4");
+            log.info("Video uploaded to S3: {}", s3VideoUrl);
+
+            // Cập nhật video capture với URL S3
+            videoCapture.setVideoUrl(s3VideoUrl);
             videoCapture.setDescription(description);
             videoCapture.setIsCreated(true);
             videoCapture.setLastUpdated(LocalDateTime.now());
@@ -213,6 +228,27 @@ public class VideoCaptureServiceImpl implements VideoCaptureService {
         } catch (Exception e) {
             log.error("Error downloading image from URL: {}", imageUrl, e);
             throw new RuntimeException("Failed to download image: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Download video từ URL
+     */
+    private byte[] downloadVideoFromUrl(String videoUrl) {
+        try {
+            log.info("Downloading video from: {}", videoUrl);
+            RestTemplate restTemplate = new RestTemplate();
+            ResponseEntity<byte[]> response = restTemplate.getForEntity(videoUrl, byte[].class);
+
+            if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
+                log.info("Video downloaded successfully from: {}", videoUrl);
+                return response.getBody();
+            } else {
+                throw new RuntimeException("Failed to download video from URL: " + videoUrl);
+            }
+        } catch (Exception e) {
+            log.error("Error downloading video from URL: {}", videoUrl, e);
+            throw new RuntimeException("Failed to download video: " + e.getMessage(), e);
         }
     }
 
